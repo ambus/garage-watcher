@@ -1,11 +1,18 @@
 const Gpio = require('onoff').Gpio;
 const led = new Gpio(17, 'out');
-
-console.log('Hello World!');
-
-let myStatus = false;
+const doorStatus = new Gpio(23, 'in');
 
 setInterval(() => {
- led.writeSync(myStatus ? 1 : 0);
- myStatus = !myStatus;
-}, 500)
+    // doorStatus.readSync((err, value) => {
+    //     led.writeSync(value);
+    //     console.log(value)
+    // })
+
+    const status = doorStatus.readSync();
+    led.writeSync(status);
+}, 100);
+
+process.on('SIGINT', _ => {
+    led.unexport();
+    doorStatus.unexport();
+})
