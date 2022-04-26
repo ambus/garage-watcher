@@ -7,22 +7,23 @@ const CHECK_TIME_INTERVAL = 1000;
 
 const doorOpenedStatusSubject = new BehaviorSubject<BinaryValue>(0);
 
-setInterval(() => {
+const iv = setInterval(() => {
   const status = doorStatus.readSync();
   doorOpenedStatusSubject.next(status);
 }, CHECK_TIME_INTERVAL);
 
-doorOpenedStatusSubject
+const doorStream = doorOpenedStatusSubject
   .pipe(
     distinctUntilChanged(),
     tap((value) => {
-      console.log("New value", value);
       led.writeSync(value);
     })
   )
-  .subscribe((value) => console.warn(value));
+  .subscribe((value) => console.log(`Door is ${value ? "open" : "closed"}`));
 
 process.on("SIGINT", (_) => {
   led.unexport();
   doorStatus.unexport();
+  doorStream?.unsubscribe();
+  clearInterval(iv);
 });
