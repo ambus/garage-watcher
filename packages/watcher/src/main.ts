@@ -1,23 +1,27 @@
-import { BinaryValue, Gpio, Low } from "onoff";
-import { BehaviorSubject, tap, debounceTime , distinctUntilChanged } from "rxjs";
+import { BinaryValue, Gpio } from "onoff";
+import { BehaviorSubject, distinctUntilChanged, tap } from "rxjs";
 const led = new Gpio(17, "out");
 const doorStatus = new Gpio(23, "in");
 
-const doorAreOpenSubject = new BehaviorSubject<BinaryValue>(0);
+const CHECK_TIME_INTERVAL = 1000;
 
-//TODO add observable do któgo bedzie przekazywany strumień z informacją o statusie
-// następnie dodać pipa w którym będzie debouncer (spowoduje to zredukowanie szumów)
-// wysyłanie komunikatów dopiero gdy brama bedzie otwarta przez 5 s
+const doorOpenedStatusSubject = new BehaviorSubject<BinaryValue>(0);
 
 setInterval(() => {
   const status = doorStatus.readSync();
-  doorAreOpenSubject.next(status);
-  // led.writeSync(status);
-}, 100);
+  doorOpenedStatusSubject.next(status);
+}, CHECK_TIME_INTERVAL);
 
-doorAreOpenSubject
-  .pipe(distinctUntilChanged(), debounceTime(1000),  tap((value) => {console.log('New value', value); led.writeSync(value)}))
+doorOpenedStatusSubject
+  .pipe(
+    distinctUntilChanged(),
+    tap((value) => {
+      console.log("New value", value);
+      led.writeSync(value);
+    })
+  )
   .subscribe((value) => console.warn(value));
+
 process.on("SIGINT", (_) => {
   led.unexport();
   doorStatus.unexport();
