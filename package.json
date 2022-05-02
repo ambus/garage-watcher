@@ -29,6 +29,7 @@
   "dependencies": {
     "onoff": "^6.0.3",
     "rxjs": "^7.5.5",
+    "smsapi": "^2.0.4",
     "tslib": "^2.0.0"
   }
 }
