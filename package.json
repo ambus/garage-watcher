@@ -1,10 +1,10 @@
 {
   "name": "garage-watcher",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "license": "MIT",
   "scripts": {
     "watcher:start": "nx serve watcher",
-    "watcher:production": "nx serve watcher:production"
+    "watcher:build": "nx serve watcher:build:production"
   },
   "private": true,
   "devDependencies": {
