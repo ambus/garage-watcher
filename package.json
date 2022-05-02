@@ -3,7 +3,8 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
-    "watcher:start": "nx serve watcher"
+    "watcher:start": "nx serve watcher",
+    "watcher:production": "nx serve watcher:production"
   },
   "private": true,
   "devDependencies": {
